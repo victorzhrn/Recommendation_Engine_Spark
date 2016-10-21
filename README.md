@@ -35,4 +35,4 @@ This project is created to participate [OutBrain Click Prediction](https://www.k
 #### Collaborative Filtering
 * Collaborative filtering, also known as recommendation engines, are widely used in the ecommerce space to generate recommendations to customers based on user-behavior data. The algorithm used for this job is known as *User-based recommenders*
 
-> Find users that are similar to the target user, and uses their collaborative ratings to make recommendations for the target user.
+	> Find users that are similar to the target user, and uses their collaborative ratings to make recommendations for the target user.
