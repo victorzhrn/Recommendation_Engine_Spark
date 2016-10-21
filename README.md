@@ -8,7 +8,7 @@ This project is created to participate [OutBrain Click Prediction](https://www.k
 * rank the recommendations in each group by decreasing predicted likelihood of being clicked
 
 ### Data Description
-OutBrain provides a relational dateset including details of historical pageview, documents, user behaviors, ads details. 
+* OutBrain provides a relational dateset including details of historical pageview, documents, user behaviors, ads details. 
 
 #### Attributes Description
 * uuid: an unique id for each user.
@@ -28,3 +28,6 @@ OutBrain provides a relational dateset including details of historical pageview,
 |docuements_meta| document_id,publisher_id,...| details on every document|
 |events| display_id, uuid, document_id,time_stamp...| informations on display_id context; convers both the train and test set|
 
+### Spark & Collaborative Filtering
+#### Why Spark?
+* Spark is especially useful and fast in area of data science, the reason being, instead of storing intermediate data flows on hdfs in Hadoop, it stores intermediate result in memory via a new data model called resilient distributed datasets (RDD). In many data analytical algorithms, iterative methods are called with slightly changing parameters (Ex: gradient descent). Because of iterative nature of many data analytical and machine learning algorithms, Spark enhance the speed performance in big data jobs. 
