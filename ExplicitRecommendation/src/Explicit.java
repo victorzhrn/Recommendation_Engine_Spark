@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.apache.spark.SparkConf;
 
-public class Explitcit {
+public class Explicit {
 	
 	public static void main(String[] args){
 		SparkConf conf = new SparkConf().setAppName("Java CF");
@@ -25,9 +25,9 @@ public class Explitcit {
 				new Function<String, Rating>(){
 					public Rating call (String s){
 						String[] sarray = s.split(",");
-						int uuid = Integer.parseInt(sarray[0]);
-						int ad_id = Integer.parseInt(sarray[1]);
-						int clicked = Integer.parseInt(sarray[2]);
+						int uuid = Integer.parseInt(sarray[1]);
+						int ad_id = Integer.parseInt(sarray[2]);
+						int clicked = Integer.parseInt(sarray[3]);
 						return new Rating(uuid,ad_id,clicked);
 					}
 				}
