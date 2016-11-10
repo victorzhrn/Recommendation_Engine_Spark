@@ -10,3 +10,8 @@ alter table training_set add column user_id int default NULL;
 update training_subset A set A.user_id = (select B.user_id from user_ids B where A.uuid=B.uuid);
 
 update training_set A set A.user_id = (select B.user_id from user_ids B where A.uuid=B.uuid);
+
+update testing_set A set A.user_id = (select B.user_id from user_ids B where A.uuid=B.uuid);
+
+create table testing_subset as select A.* from testing_set A, training_subset B where A.user_id=B.user_id and B.ad_id=A.ad_id limit 10;
+
