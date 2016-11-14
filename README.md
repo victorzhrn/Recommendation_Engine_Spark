@@ -42,6 +42,6 @@ This project is created to participate [OutBrain Click Prediction](https://www.k
 ### Matrix Factorization
 The idea about matrix factorization is to find latent features underlything the interactions between 2 different entities through find a linear algebra representation on the latent features. In this case, it is to find the underlying feartures shared by users who click same ads. 
 
-In this problem, there is a set of all users (*U*) and all ads (*D*)
+In this problem, there is a set of all users **U** and a set of all ads **D**. A rating matrixed **R** is a matrix with dimention of |**U**| \* |**D**| 
 
 
