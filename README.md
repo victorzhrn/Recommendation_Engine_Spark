@@ -37,10 +37,11 @@ This project is created to participate [OutBrain Click Prediction](https://www.k
 
 	> Find users that are similar to the target user, and uses their collaborative ratings to make recommendations for the target user.
 
+---
 ## Algorithms
 ### Matrix Factorization
 The idea about matrix factorization is to find latent features underlything the interactions between 2 different entities through find a linear algebra representation on the latent features. In this case, it is to find the underlying feartures shared by users who click same ads. 
 
-In this problem, there is a set of all users: $u$
+In this problem, there is a set of all users (*U*) and all ads (*D*)
 
 
