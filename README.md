@@ -37,12 +37,13 @@ This project is created to participate [OutBrain Click Prediction](https://www.k
 
 	> Find users that are similar to the target user, and uses their collaborative ratings to make recommendations for the target user.
 
----
+
+
 ## Algorithms
 ### Matrix Factorization
 The idea about matrix factorization is to find latent features underlything the interactions between 2 different entities through find a linear algebra representation on the latent features. In this case, it is to find the underlying feartures shared by users who click same ads. 
 
-In this problem, there is a set of all users **U** and a set of all ads **D**. A rating matrixed **R** is a matrix with dimention of |**U**|\*|**D**| where **R**(i,j) represents the binary indicator whether i*th* customer clicked on j*th* ads. The elements on **R** where the customers did not clicked ads are filled with zeros. The goal is to find factorize **R** into two submatrix **P**=|**U**|\***k** and **Q** =|**D**|\***k** so that \begin<equation>**R** \(\approx\) **P**\***Q**<sup>T</sup> \end<equation>. Here **K** is the vector representation of the underlying latent feature. The rows of **P** represents the association between a user and latent features. The rows of **Q** represents the association between a item and the latent featuers. The ultimate here is to come up with such **P** and **Q** so that their vector product approximates on our observations on users' behavior; meanwhile, the **K** offers the recommendation engine on estimation of latent features so that it can provide extra information on unobserved **R**(i,j).
+In this problem, there is a set of all users **U** and a set of all ads **D**. A rating matrixed **R** is a matrix with dimention of |**U**|\*|**D**| where **R**(i,j) represents the binary indicator whether i*th* customer clicked on j*th* ads. The elements on **R** where the customers did not clicked ads are filled with zeros. The goal is to find factorize **R** into two submatrix **P**=|**U**|\***k** and **Q** =|**D**|\***k** so that **P**\***Q**<sup>T</sup> approxiamates **R** . Here **K** is the vector representation of the underlying latent feature. The rows of **P** represents the association between a user and latent features. The rows of **Q** represents the association between a item and the latent featuers. The ultimate here is to come up with such **P** and **Q** so that their vector product approximates on our observations on users' behavior; meanwhile, the **K** offers the recommendation engine on estimation of latent features so that it can provide extra information on unobserved **R**(i,j).
 
 ### Alternative Least Square
 The optimization process to **P** and **Q** could just with any random **k**, and using other OR (brief for Operation Research) techniques such as stochatic gradient descent to come up with a relative optimal. Such process is called Alternative Least Square (ALS for rest of this paper). The ALS method has already be implemented in the *mllib* from spark library.
@@ -50,4 +51,33 @@ The optimization process to **P** and **Q** could just with any random **k**, an
 ### Model Regulization
 Even though ALS has already be implemented in *mllib* it is worth to menth that the problem opimizing **K** is a high-dimentional non-convex problem which means in many situations (especially in situations of big datasets) the global optimal in not guarrenteed. In fact, the global optimal is almost never reached in practical. 
 
-It is very import to point out, as the complexity of **K** increases, it is very possible for overfitting. Just like some regression techniques like *Lasso* and *Ridge*, ALS should be penalized by the model's complexity. Therefore, the optimization target is a combination of (\(\sum\) error) and (regulating\_prameter\***K**'s complexity).
+It is very import to point out, as the complexity of **K** increases, it is very possible for overfitting. Just like some regression techniques like *Lasso* and *Ridge*, ALS should be penalized by the model's complexity. Therefore, the optimization target is a combination of (sum of error) and (regulating\_prameter\***K**'s complexity).
+
+## Implementation
+### Data Preparetion
+The provided csv file was first loaded into mysql database on hortonworks sandbox. All queries used are stored in the folder "queries". The uuid (user ids) are transfered from varchar(20) into int values because the default class "rating" from pyspark library only takes user\_id as int. After those preparation are done, I uses sqoop to import the data set into hdfs as following:  
+```
+sqoop import --connect jdbc:mysql://sandbox.hortonworks.com:3306/spark_data --username root --table training_subset --target-dir /tmp/spark_data/training_subset --driver com.mysql.jdbc.Driver --as-textfile  -m 1 
+```
+Due to my current limited storage space for the virtual machine sandbox, I was not able to import all the training set but only a subset of the training set.
+
+
+### ALS on Pyspark
+It is important to point out spark will not execute any transformations until an action is instructed. In my particular case, the data sheet is untouched for all "map" functions and it is only executed when the specific model "ALS" is called:
+```python
+from pyspark import SparkContext, SparkConf
+from pyspark.mllib.recommendation import ALS, MatrixFactorizationModel, Rating
+
+conf = SparkConf().setAppName("py_rec").setMaster("local")
+sc = SparkContext(conf = conf)
+
+data = sc.textFile("hdfs:///tmp/spark_data/training_subset/part-m-00000")
+
+ratings = data.map(lambda l: l.split(','))\
+    .map(lambda l: Rating(int(l[4]), int(l[2]), float(l[3])))
+
+rank = 10
+numIterations = 10
+
+model = ALS.train(ratings, rank, numIterations)
+```

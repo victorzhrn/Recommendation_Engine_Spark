@@ -1,0 +1,25 @@
+// import as sequence file
+sqoop import --connect jdbc:mysql://sandbox.hortonworks.com:3306/spark_data --username root --table pv_sample --target-dir /tmp/spark_data/pv_sample --driver com.mysql.jdbc.Driver --as-sequencefile 
+
+
+// import trainging_subset hive
+sqoop import --connect jdbc:mysql://sandbox.hortonworks.com:3306/spark_data --username root --table training_subset -m 4 --split-by uuid --driver com.mysql.jdbc.Driver --hive-import --create-hive-table --hive-table spark_data.training_subset --map-column-hive clicked=binary
+
+// Import training data subset
+sqoop import --connect jdbc:mysql://sandbox.hortonworks.com:3306/spark_data --username root --table training_subset --target-dir /tmp/spark_data/training_subset --driver com.mysql.jdbc.Driver --as-textfile  -m 1 
+
+// Import testing data subset
+sqoop import --connect jdbc:mysql://sandbox.hortonworks.com:3306/spark_data --username root --table testing_subset --target-dir /tmp/spark_data/testing_subset --driver com.mysql.jdbc.Driver --as-textfile  -m 1 
+
+// Import training data set split by user_id
+sqoop import --connect jdbc:mysql://sandbox.hortonworks.com:3306/spark_data --username root --table training_set --target-dir /tmp/spark_data/training_set --driver com.mysql.jdbc.Driver --as-textfile  -m 10 --split-by user_id 
+
+sqoop import --connect jdbc:mysql://sandbox.hortonworks.com:3306/spark_data?dontTrackOpenResources=true\&defaultFetchSize=10000\&useCursorFetch=true --username root --table training_set --target-dir /tmp/spark_data/training_set --driver com.mysql.jdbc.Driver --as-textfile  -m 1
+
+// export 
+sqoop export --connect jdbc:mysql://sandbox.hortonworks.com:3306/spark_data --username root -m 1 --table export_pv_sample --export-dir /tmp/spark_data/pv_sample_splits  --driver com.mysql.jdbc.Drive
+
+sqoop export --connect jdbc:mysql://sandbox.hortonworks.com:3306/spark_data --username root -m 4 --table export_pv_sample --export-dir /tmp/spark_data/pv_sample_splits --driver com.mysql.jdbc.Driver
+
+sqoop export --connect jdbc:mysql://sandbox.hortonworks.com:3306/spark_data --driver com.mysql.jdbc.Driver --username hive --password hive --table export_pv_sample --hcatalog-table pv_sample --hcatalog-database spark_data
+
