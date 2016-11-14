@@ -39,6 +39,7 @@ This project is created to participate [OutBrain Click Prediction](https://www.k
 
 
 
+
 ## Algorithms
 ### Matrix Factorization
 The idea about matrix factorization is to find latent features underlything the interactions between 2 different entities through find a linear algebra representation on the latent features. In this case, it is to find the underlying feartures shared by users who click same ads. 
@@ -52,6 +53,8 @@ The optimization process to **P** and **Q** could just with any random **k**, an
 Even though ALS has already be implemented in *mllib* it is worth to menth that the problem opimizing **K** is a high-dimentional non-convex problem which means in many situations (especially in situations of big datasets) the global optimal in not guarrenteed. In fact, the global optimal is almost never reached in practical. 
 
 It is very import to point out, as the complexity of **K** increases, it is very possible for overfitting. Just like some regression techniques like *Lasso* and *Ridge*, ALS should be penalized by the model's complexity. Therefore, the optimization target is a combination of (sum of error) and (regulating\_prameter\***K**'s complexity).
+
+
 
 ## Implementation
 ### Data Preparetion
@@ -81,3 +84,15 @@ numIterations = 10
 
 model = ALS.train(ratings, rank, numIterations)
 ```
+
+## Result 
+After training the data, I used the training set to test validity of the model can calculate the mean square error (MSE). The output MSE is very close to 0 which is very much expected since the definition of **P**\***Q** is supposed to approximate original **R**. 
+```python
+testdata = ratings.map(lambda p: (p[0],p[1]))
+predictions = model.predictAll(testdata).map(lambda r:((r[0],r[1]),r[2]))
+
+ratesAndPreds = ratings.map(lambda r: ((r[0], r[1]), r[2])).join(predictions)
+MSE = ratesAndPreds.map(lambda r: (r[1][0] - r[1][1])**2).mean()
+print("Mean Squared Error = " + str(MSE))
+``` 
+To accomplish the competition, I was going resize the storage for the sandbox to fit all the training set in the model. I expect the training time will increase exponentially as the size of **U** and **D** increases. 
