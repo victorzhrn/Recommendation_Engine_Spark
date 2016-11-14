@@ -50,4 +50,4 @@ The optimization process to **P** and **Q** could just with any random **k**, an
 ### Model Regulization
 Even though ALS has already be implemented in *mllib* it is worth to menth that the problem opimizing **K** is a high-dimentional non-convex problem which means in many situations (especially in situations of big datasets) the global optimal in not guarrenteed. In fact, the global optimal is almost never reached in practical. 
 
-It is very import to point out, as the complexity of **K** increases, it is very possible for overfitting. Just like some regression techniques like *Lasso* and *Ridge*, ALS should be penalized by the model's complexity. Therefore, the optimization target is a combination of (sum of error) and (regulating\_prameter**K**'s complexity). 
+It is very import to point out, as the complexity of **K** increases, it is very possible for overfitting. Just like some regression techniques like *Lasso* and *Ridge*, ALS should be penalized by the model's complexity. Therefore, the optimization target is a combination of (\sum error) and (regulating\_prameter\***K**'s complexity). 
