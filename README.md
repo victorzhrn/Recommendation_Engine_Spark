@@ -1,6 +1,6 @@
 # Recommendation Engine Spark
 
-## Description of Project
+## General Description
 This project is created to participate [OutBrain Click Prediction](https://www.kaggle.com/c/outbrain-click-prediction) competition hosted on [Kaggle](http://www.kaggle.com/competitions). The content of this project involves building a collaborative filtering system using Spark. The task in this competition is to predict the likelihood of user cliking certain ads or documents based on historical data.
 
 ## Background
@@ -36,3 +36,11 @@ This project is created to participate [OutBrain Click Prediction](https://www.k
 * Collaborative filtering, also known as recommendation engines, are widely used in the ecommerce space to generate recommendations to customers based on user-behavior data. The algorithm used for this job is known as *User-based recommenders*
 
 	> Find users that are similar to the target user, and uses their collaborative ratings to make recommendations for the target user.
+
+## Algorithms
+### Matrix Factorization
+The idea about matrix factorization is to find latent features underlything the interactions between 2 different entities through find a linear algebra representation on the latent features. In this case, it is to find the underlying feartures shared by users who click same ads. 
+
+In this problem, there is a set of all users: $u$
+
+
