@@ -44,21 +44,21 @@ This project is created to participate [OutBrain Click Prediction](https://www.k
 ### Matrix Factorization
 The idea about matrix factorization is to find latent features underlything the interactions between 2 different entities through find a linear algebra representation on the latent features. In this case, it is to find the underlying feartures shared by users who click same ads. 
 
-In this problem, there is a set of all users **U** and a set of all ads **D**. A rating matrixed **R** is a matrix with dimention of |**U**|\*|**D**| where **R**(i,j) represents the binary indicator whether i*th* customer clicked on j*th* ads. The elements on **R** where the customers did not clicked ads are filled with zeros. The goal is to find factorize **R** into two submatrix **P**=|**U**|\***k** and **Q** =|**D**|\***k** so that **P**\***Q**<sup>T</sup> approxiamates **R** . Here **K** is the vector representation of the underlying latent feature. The rows of **P** represents the association between a user and latent features. The rows of **Q** represents the association between a item and the latent featuers. The ultimate here is to come up with such **P** and **Q** so that their vector product approximates on our observations on users' behavior; meanwhile, the **K** offers the recommendation engine on estimation of latent features so that it can provide extra information on unobserved **R**(i,j).
+In this problem, there is a set of all users **U** and a set of all ads **D**. A rating matrixed **R** is a matrix with dimention of |**U**|\*|**D**| where **R**(i,j) represents the binary indicator whether i*th* customer clicked on j*th* ads. The elements on **R** where the customers did not clicked the ads are filled with zeros. The goal is to factorize **R** into two submatrix **P**=|**U**|\***k** and **Q** =|**D**|\***k** so that **P**\***Q**<sup>T</sup> approxiamates **R** . Here, **K** is the vector representation of the underlying latent features. The rows of **P** represents the association between a user and the latent features. The rows of **Q** represents the association between a item and the latent featuers. The ultimate goal here is to come up with a pair of **P** and **Q** so that their cross product approximates existing observations on users' behavior; meanwhile, the **K** offers the recommendation engine on estimation of latent features so that it can provide extra information on unobserved **R**(i,j).
 
 ### Alternative Least Square
-The optimization process to **P** and **Q** could just with any random **k**, and using other OR (brief for Operation Research) techniques such as stochatic gradient descent to come up with a relative optimal. Such process is called Alternative Least Square (ALS for rest of this paper). The ALS method has already be implemented in the *mllib* from spark library.
+The optimization process to **P** and **Q** could just start with any random **k**, and using any OR (brief for Operation Research) techniques such as stochatic gradient descent to come up with a relative optimal. Such process is called Alternative Least Square (ALS). The ALS method has already be implemented in the *mllib* from pyspark library.
 
 ### Model Regulization
-Even though ALS has already be implemented in *mllib* it is worth to menth that the problem opimizing **K** is a high-dimentional non-convex problem which means in many situations (especially in situations of big datasets) the global optimal in not guarrenteed. In fact, the global optimal is almost never reached in practical. 
+Even though ALS has already be implemented in *mllib* it is worth to menth that the problem of opimizing **K** is a high-dimentional non-convex problem which means in many situations (especially for big datasets) the global optimal in not guarrenteed. In fact, the global optimal is almost never reached in practical. 
 
-It is very import to point out, as the complexity of **K** increases, it is very possible for overfitting. Just like some regression techniques like *Lasso* and *Ridge*, ALS should be penalized by the model's complexity. Therefore, the optimization target is a combination of (sum of error) and (regulating\_prameter\***K**'s complexity).
+It is very import to point out, as the complexity of **K** increases, it is very possible for the model to overfit. Just like some regression techniques like *Lasso* and *Ridge*, ALS could be penalized by the model's complexity. Therefore, the optimization target is a combination of (sum of error) and (regulating\_prameter\***K**'s complexity).
 
 
 
 ## Implementation
 ### Data Preparetion
-The provided csv file was first loaded into mysql database on hortonworks sandbox. All queries used are stored in the folder "queries". The uuid (user ids) are transfered from varchar(20) into int values because the default class "rating" from pyspark library only takes user\_id as int. After those preparation are done, I uses sqoop to import the data set into hdfs as following:  
+The provided csv file was first loaded into mysql database on hortonworks sandbox. All queries used are stored in the folder "queries". The uuid (user ids) are transfered from varchar(20) into int values because the default class "rating" from pyspark library only takes user\_id as int. After those preparation are done, I used sqoop to import the data set into hdfs as following:  
 ```
 sqoop import --connect jdbc:mysql://sandbox.hortonworks.com:3306/spark_data --username root --table training_subset --target-dir /tmp/spark_data/training_subset --driver com.mysql.jdbc.Driver --as-textfile  -m 1 
 ```
@@ -86,7 +86,7 @@ model = ALS.train(ratings, rank, numIterations)
 ```
 
 ## Result 
-After training the data, I used the training set to test validity of the model can calculate the mean square error (MSE). The output MSE is very close to 0 which is very much expected since the definition of **P**\***Q** is supposed to approximate original **R**. 
+After training the data, I reused the training set to test validity of the model and calculate the mean square error (MSE). The output MSE is very close to 0 which is very much expected since the definition of **P**\***Q** is supposed to approximate original **R**. 
 ```python
 testdata = ratings.map(lambda p: (p[0],p[1]))
 predictions = model.predictAll(testdata).map(lambda r:((r[0],r[1]),r[2]))
